@@ -1,0 +1,129 @@
+/* navbar.css - keep minimal, avoid collapse rules that depend on bootstrap JS */
+
+.app-navbar {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* inner container aligns left and right groups */
+.navbar-inner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+/* search */
+.search-div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 auto; /* allow to grow */
+  max-width: 700px;
+}
+
+.search-bar-input {
+  flex: 1;
+  min-width: 160px;
+  padding: 8px 10px;
+  border-radius: 20px;
+  border: 2px solid rgba(15, 23, 42, 0.06);
+  outline: none;
+  background: #fff;
+  font-size: 0.95rem;
+}
+
+.search-btn {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* actions on the right */
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: 12px;
+}
+
+/* notification button */
+.icon-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #f3f4f6;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  cursor: pointer;
+}
+
+/* small red badge */
+.notification-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 18px;
+  height: 18px;
+  background: red;
+  color: white;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* profile */
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px;
+  background: #f3f4f6;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.user-avatar {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  color: white;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+}
+
+/* user name */
+.user-name {
+  font-weight: 500;
+  color: #111827;
+}
+
+/* hidden state when scrolling down */
+.navbar-hidden {
+  transform: translateY(-100%);
+}
+
+/* small responsive adjustments */
+@media (max-width: 900px) {
+  .search-div {
+    max-width: 360px;
+  }
+  .user-name {
+    display: none;
+  }
+}

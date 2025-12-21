@@ -1,0 +1,24 @@
+.nav-link {
+  color: #aaa !important;
+  transition: all 0.2s ease-in-out;
+}
+
+.nav-link:hover {
+  background-color: #272727;
+  color: #fff !important;
+}
+
+.nav-link.active {
+  background-color: #3ea6ff !important;
+  color: #fff !important;
+  font-weight: 600;
+}
+
+.toggle-btn:hover {
+  background-color: #222 !important;
+}
+
+.sidebar.collapsed .nav-link span,
+.sidebar.collapsed .logo-text {
+  display: none;
+}

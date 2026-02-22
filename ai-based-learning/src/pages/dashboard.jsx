@@ -82,66 +82,105 @@ export default function DashboardPage() {
   ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
   return (
-    <div className="p-6 space-y-6">
-
+    <div className="min-h-screen">
+      <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px, transparent_1px)] bg-size-[16px 16px] opacity-30 pointer-events-none"></div>
+      <div className="relative max-w-7xl mx-auto">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-        <p className="text-slate-500">Track your learning progress and activity</p>
+      <div className="mb-6">
+        <h1 className="text-2xl font-medium text-slate-800 tracking-tight mb-2">Dashboard</h1>
+        <p className="text-slate-500 text-sm">Track your learning progress and activity</p>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-5">
         {stats.map((stat, index) => (
-          <div key={index} className="p-4 rounded-xl shadow bg-white flex justify-between items-center">
-            <div>
-              <p className="text-sm text-slate-500">{stat.label}</p>
-              <p className="text-xl font-bold">{stat.value}</p>
+          <div key={index} className="group relative bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-2xl shadow-xl shadow-slate-200/50 p-6 hover:shadow-2xl hover:shadow-slate-300/50 transition-all duration-300 hower:-translate-y-1">
+            <div className="flex items-center justify-between">
+
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                {stat.label}
+              </span>
+              <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${stat.gradient} ${stat.shadowColor} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
+              <stat.icon className="w-5 h-5 text-white" strokeWidth={2} />
+              </div>
             </div>
-            <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${stat.gradient} ${stat.shadowColor} flex items-center justify-center`}>
-              <stat.icon className="text-white" strokeWidth={2} />
+            <div className="text-3xl font-semibold text-slate-900 tracking-tight">
+              {stat.value}
             </div>
           </div>
         ))}
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white rounded-xl shadow p-4">
-        <div className="flex items-center gap-2 mb-4">
-          <Clock />
-          <h3 className="text-lg font-semibold">Recent Activity</h3>
-        </div>
+      <div className="bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-2xl shadow-xl shadow-slate-200/50 p-8 mt-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-600 flex items-center justify-center">
+              <Clock className="w-5 h-5 text-white" strokeWidth={2}/>
+            </div>
+            <h3 className="text-xl font-medium text-slate-900 tracking-tight">
+              Recent Activity
+            </h3>
+          </div>
 
-        {activities.length > 0 ? (
-          <div className="space-y-3">
-            {activities.map((activity, index) => (
-              <div key={activity.id || index} className="flex justify-between items-center border-b pb-2">
-                <div>
-                  <p className="text-sm">
-                    {activity.type === "document" ? "Document Accessed: " : "Quiz Attempted: "}
-                    <span className="font-medium">{activity.description}</span>
-                  </p>
-                  <p className="text-xs text-slate-400">
-                    {new Date(activity.timestamp).toLocaleString()}
-                  </p>
+        {dashboardData.recentActivity && (dashboardData.recentActivity.documents.length>0 || dashboardData.recentActivity.quizzes.length>0) ? (
+            <div className="space-y-3">
+              {[
+                ...(dashboardData.recentActivity.documents || []).map(doc=>({
+                  id: doc._id,
+                  description: doc.title,
+                  timestamp: doc.lastAccessed,
+                  link: `/documents/${doc._id}`,
+                  type: "document",
+                })),
+                ...(dashboardData.recentActivity.quizzes || []).map(quiz=>({
+                  id: quiz._id,
+                  description: quiz.title,
+                  timestamp: quiz.lastAttempted,    
+                  link: `/quizzes/${quiz._id}`,
+                  type: "quiz",
+                })),
+              ]
+              .sort((a,b)=> new Date(b.timestamp) - new Date(a.timestamp))
+              .map((activity, index)=>(
+                <div 
+                  key={activity.id||index} className="group flex items-center justify-between p-4 rounded-xl bg-slate-50/50 border-slate-200/60 hover:bg-white hover:border-slate-300/60 hover:shadow-md transition-all duration-200"
+                >
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <div className={`w-2 h-2 rounded-full ${
+                        activity.type === 'document'
+                        ? 'bg-gradient-to-r from-blue-400 to-cyan-500'
+                        :'bg-gradient-to-r from-emerald-400 to-teal-500'
+                      }`}></div>
+                      <p className="text-sm font-medium text-slate-900 truncate">
+                        {activity.type === 'document' ? "Document Accessed" : "Quiz Attempted"}
+                        <span className="text-slate-700">{activity.description}</span>
+                      </p>
+                    </div>
+                    <p className="text-xs text-slate-500 pl-4">
+                      {new Date(activity.timestamp).toLocaleString()}
+                    </p>
+                  </div>
+                  {activity.link &&(
+                    <a href={activity.link}
+                    className="ml-4 px-4 py-2 text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-all duration-200 whitespace-nowrap flex items-center gap-1">
+                      view
+                    </a>
+                  )}
                 </div>
-
-                {activity.link && (
-                  <a href={activity.link} className="text-sm text-blue-500 hover:underline">
-                    View
-                  </a>
-                )}
+              ))}
+            </div>
+          ):(
+            <div className="text-center py-12">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4">
+                <Clock className="w-8 h-8 text-slate-400"/>
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center text-slate-400">
-            <p>No recent activity yet.</p>
-            <p className="text-sm">Start learning to see your activity here.</p>
-          </div>
-        )}
+              <p className="text-sm text-slate-600">No recent Activity yet.</p>
+              <p className="text-xs text-slate-500 mt-1">Start learning to see your activity here.</p>
+            </div>
+          )}
+        </div>
       </div>
-
     </div>
   );
 }

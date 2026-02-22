@@ -23,11 +23,19 @@ import QuizeTake from "./pages/quizes/quize_take.jsx";
 import QuizeResult from "./pages/quizes/quize_result.jsx";
 
 import ProtectedRoute from "./store/ProtectedRoute.jsx";
-import { useAuth } from "./store/auth.jsx";
+import { useAuth } from "./store/authContext.jsx";
 
 function App() {
-  const { isAuthentcated } = useAuth();
-  
+  const { isAuthenticated, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
   return (
     <Router>
       <Routes>
@@ -36,9 +44,12 @@ function App() {
         <Route
           path="/"
           element={
-            isAuthentcated ? <Navigate to="/home" replace /> : <Navigate to="/login" replace />
+            isAuthenticated
+              ? <Navigate to="/home" replace />
+              : <Navigate to="/login" replace />
           }
         />
+
         <Route path="/login" element={<LoginForm />} />
         <Route path="/registration" element={<RegistrationForm />} />
         <Route path="/logout" element={<LogOut />} />

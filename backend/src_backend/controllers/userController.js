@@ -54,75 +54,81 @@ export const registerUser = async (req, res) => {
 
 // Login Controller
 export const loginUser = async (req, res) => {
-    try {
-        // Check if body exists
-        if (!req.body || Object.keys(req.body).length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: "Request body is empty",
-            });
-        }
+  try {
 
-        const { email, password } = req.body;
-
-        // Validate input
-        if (!email || !password) {
-            return res.status(400).json({
-                success: false,
-                message: "email and password are required",
-                statusCode: 400,
-            });
-        }
-
-        // Find user
-        const user = await User.findOne({ email });
-
-        if (!user) {
-            return res.status(401).json({
-                success: false,
-                message: "User doesn't exist",
-                statusCode: 401
-            });
-        }
-
-        // Compare password
-        const isPasswordMatch = await bcrypt.compare(password, user.password);
-
-        if (!isPasswordMatch) {
-            return res.status(400).json({
-                success: false,
-                message: "Invalid credentials",
-            });
-        }
-
-        // Create JWT token
-        const accessToken = jwt.sign(
-            {
-                userId: user._id,
-                username: user.username,
-            },
-            process.env.JWT_SECRET_KEY,
-            { expiresIn: "7d" }
-        );
-
-        return res.status(200).json({
-            success: true,
-            message: "Logged in successfully",
-            accessToken,
-            user: {
-                userId: user._id,
-                username: user.username,
-                email: user.email,
-             }
-        });
-
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({
-            success: false,
-            message: "Some error occurred! Please try again",
-        });
+    if (!req.body || Object.keys(req.body).length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Request body is empty",
+      });
     }
+
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "email and password are required",
+      });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "User doesn't exist",
+      });
+    }
+
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
+
+    if (!isPasswordMatch) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid credentials",
+      });
+    }
+
+    // ACCESS TOKEN (SHORT LIFE)
+    const accessToken = jwt.sign(
+      {
+        userId: user._id,
+        username: user.username,
+      },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: "15m" }
+    );
+
+    // REFRESH TOKEN (LONG LIFE)
+    const refreshToken = jwt.sign(
+      {
+        userId: user._id,
+      },
+      process.env.JWT_REFRESH_SECRET_KEY,
+      { expiresIn: "7d" }
+    );
+    console.log("LOGIN REFRESH SECRET:", process.env.JWT_REFRESH_SECRET_KEY);
+
+    return res.status(200).json({
+      success: true,
+      message: "Logged in successfully",
+      accessToken,
+      refreshToken,
+      user: {
+        userId: user._id,
+        username: user.username,
+        email: user.email,
+      },
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Some error occurred! Please try again",
+    });
+  }
 };
 
 //change password
@@ -239,3 +245,46 @@ export const getUsers = async (req, res) => {
         });
     }
 };
+
+// Refresh Access Token
+export const refreshAccessToken = async (req, res) => {
+
+  const { refreshToken } = req.body;
+
+  if (!refreshToken) {
+    return res.status(401).json({
+      success: false,
+      message: "Refresh token required",
+    });
+  }
+
+  jwt.verify(
+    refreshToken,
+    process.env.JWT_REFRESH_SECRET_KEY,
+    (err, decoded) => {
+
+      if (err) {
+        return res.status(403).json({
+          success: false,
+          message: "Invalid refresh token",
+        });
+      }
+
+      const newAccessToken = jwt.sign(
+        {
+          userId: decoded.userId,
+        },
+        process.env.JWT_SECRET_KEY,
+        { expiresIn: "15m" }
+      );
+
+      console.log("REFRESH VERIFY SECRET:", process.env.JWT_REFRESH_SECRET_KEY);
+
+      res.status(200).json({
+        success: true,
+        accessToken: newAccessToken,
+      });
+    }
+  );
+};
+

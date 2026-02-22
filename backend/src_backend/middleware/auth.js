@@ -1,49 +1,71 @@
 import jwt from "jsonwebtoken";
 import User from "../models/user.js";
 
-const protect = async (req,res,next)=>{
-    let token;
+const protect = async (req, res, next) => {
 
-    //check if token exists in Authorization header
-    if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
-        try {
-            token = req.headers.authorization.split(' ')[1];
+  try {
 
-            //verify token
-            const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
-            const userId = decoded.id || decoded._id || decoded.userId;
-            req.user =await User.findById(userId).select('-password');
+    const authHeader = req.headers.authorization;
 
-            if(!req.user){
-                return res.status(401).json({
-                    success: false,
-                    error: 'User Not Found',
-                    statusCode: 401
-                });
-            }
-            return next();
-        } catch (error) {
-            console.error('Auth middleware error:', error.message);
-
-            if(error.name === 'TokenExpiredError'){
-                return res.status(401).json({
-                    success: false,
-                    error: 'Token has expired',
-                    statusCode: 401
-                });
-            }
-            return res.status(401).json({
-            success: false,
-            error: 'Not authorized, token failed',
-            statusCode: 401
-            });
-        }    
-    }
-    return res.status(401).json({
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
         success: false,
-        error: 'Not authorized, no token',
-        statusCode: 401
+        message: "No token provided",
+      });
+    }
+
+    const token = authHeader.split(" ")[1];
+
+    jwt.verify(
+      token,
+      process.env.JWT_SECRET_KEY,
+      async (err, decoded) => {
+
+        // 🔴 ACCESS TOKEN EXPIRED → tell frontend to refresh
+        if (err?.name === "TokenExpiredError") {
+          return res.status(401).json({
+            success: false,
+            message: "Token expired",
+          });
+        }
+
+        // 🔴 INVALID TOKEN
+        if (err) {
+          return res.status(401).json({
+            success: false,
+            message: "Invalid token",
+          });
+        }
+
+        try {
+          const user = await User.findById(decoded.userId).select("-password");
+
+          if (!user) {
+            return res.status(401).json({
+              success: false,
+              message: "User not found",
+            });
+          }
+
+          req.user = user;
+          next();
+
+        } catch (dbError) {
+          return res.status(500).json({
+            success: false,
+            message: "Database error",
+          });
+        }
+      }
+    );
+
+  } catch (error) {
+    console.log("AUTH ERROR:", error.message);
+    return res.status(401).json({
+      success: false,
+      message: "Authentication failed",
     });
-}
+  }
+};
 
 export default protect;

@@ -3,13 +3,14 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
-import { FaHome, FaCompass, FaChartLine, FaBrain, FaTree, FaTrophy, FaRobot, FaBeer, FaClipboardList } from "react-icons/fa";
+import { FaHome, FaCompass, FaChartLine, FaBrain, FaTree, FaTrophy, FaRobot, FaBeer, FaClipboardList, FaBookOpen } from "react-icons/fa";
 
 const navItems = [
   { label: "Home", icon: <FaHome style={{ color: "", fontSize: "24px",}} />, path: "/home" },
   { label: "Explore", icon: <FaCompass style={{ color: "", fontSize: "24px",}}/>, path: "/explore" },
   { label: "Performance", icon: <FaChartLine style={{ color: "", fontSize: "24px",}}/>, path: "/performance" },
   { label: "Skill Gap", icon: <FaBrain style={{ color: "", fontSize: "24px",}}/>, path: "/skill-gap" },
+  { label: "Documents", icon: <FaBookOpen style={{ color: "", fontSize: "24px",}}/>, path: "/documents" },
   { label: "Knowledge Tree", icon: <FaTree style={{ color: "", fontSize: "24px",}}/>, path: "/knowledge-tree" },
   { label: "Achievements", icon: <FaTrophy style={{ color: "", fontSize: "24px",}}/>, path: "/achievements" },
   { label: "AI Assistant", icon: <FaRobot style={{ color: "", fontSize: "24px",}}/>, path: "/ai-assistant" },

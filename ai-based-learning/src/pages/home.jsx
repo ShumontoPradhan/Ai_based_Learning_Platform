@@ -1,6 +1,6 @@
 import React from "react";
 import "./pages-css/home.css";
-import { useAuth } from "../store/auth";
+import { useAuth } from "../store/authContext";
 
 export default function Home({ shrink }) {
   const {user} = useAuth();

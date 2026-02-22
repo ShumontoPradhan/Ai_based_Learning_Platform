@@ -1,106 +1,69 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import authService from "../services/auth_service";
+import toast from "react-hot-toast";
 import "./style_registration.css";
-import { useNavigate } from "react-router-dom";
-import {useAuth} from "../store/auth.jsx";
 
 const RegistrationForm = () => {
-  const [formValues, setFormValues] = useState({
+  // 1. Consolidated state to match your inputs
+  const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
-    terms: false,
+    terms: false, // Initialize terms as false
   });
 
-  const navigate = useNavigate();
-  const {storeTokenInLS} = useAuth();
-  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({}); // For field-specific errors
 
+  const navigate = useNavigate();
+
+  // 2. Handle input changes correctly
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormValues((prev) => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
   };
 
-  const validate = () => {
-    const newErrors = {};
-
-    if (!formValues.username.trim()) {
-      newErrors.username = "Username is required.";
-    }
-
-    if (!formValues.email.trim()) {
-      newErrors.email = "Email is required.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formValues.email)) {
-      newErrors.email = "Enter a valid email.";
-    }
-
-    if (!formValues.password) {
-      newErrors.password = "Password is required.";
-    } else if (formValues.password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters.";
-    }
-
-    if (!formValues.confirmPassword) {
-      newErrors.confirmPassword = "Please confirm your password.";
-    } else if (formValues.password !== formValues.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match.";
-    }
-
-    if (!formValues.terms) {
-      newErrors.terms = "You must accept the terms.";
-    }
-
-    return newErrors;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const validationErrors = validate();
-    setErrors(validationErrors);
+    // Basic Validation
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    if (!formData.terms) {
+      toast.error("You must accept the terms and conditions");
+      return;
+    }
 
-    if (Object.keys(validationErrors).length > 0) return;
+    setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formValues),
-      });
-
-      if(response.ok){
-
-        const res_data = await response.json();
-        console.log("response from server", res_data);
-
-        //store the token in local storage
-        storeTokenInLS(res_data.accessToken);
-        // localStorage.setItem("token", res_data);
-
-        setFormValues({
-          username: "",
-          email: "",
-          password: "",
-          confirmPassword: "",
-          terms: false,
-        })
-        navigate("/login");
-      }
-
-      console.log(await response.json());
-      alert("Registered successfully!");
+      // 3. Pass ALL required fields, including terms
+      await authService.register(
+        formData.username,
+        formData.email,
+        formData.password,
+        formData.terms // <--- This was missing
+      );
+      
+      toast.success("Registration successful! Please log in.");
+      navigate("/login");
     } catch (error) {
-      console.log("register error:", error);
+      const msg = error?.response?.data?.message || error.message || "Registration failed.";
+      toast.error(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="container">
+    <div className="container" style={{marginTop: "20px"}}>
       <form className="form-card" noValidate onSubmit={handleSubmit}>
         <h2>Create an account</h2>
         <p className="subtitle">Sign up to get started</p>
@@ -113,11 +76,9 @@ const RegistrationForm = () => {
             id="username"
             name="username"
             placeholder="Enter username"
-            value={formValues.username}
+            value={formData.username} 
             onChange={handleChange}
-            required
           />
-          <span className="error">{errors.username}</span>
         </div>
 
         {/* Email */}
@@ -128,11 +89,9 @@ const RegistrationForm = () => {
             id="email"
             name="email"
             placeholder="you@example.com"
-            value={formValues.email}
+            value={formData.email}
             onChange={handleChange}
-            required
           />
-          <span className="error">{errors.email}</span>
         </div>
 
         {/* Password */}
@@ -143,12 +102,9 @@ const RegistrationForm = () => {
             id="password"
             name="password"
             placeholder="Minimum 8 characters"
-            value={formValues.password}
+            value={formData.password}
             onChange={handleChange}
-            minLength={8}
-            required
           />
-          <span className="error">{errors.password}</span>
         </div>
 
         {/* Confirm Password */}
@@ -159,35 +115,30 @@ const RegistrationForm = () => {
             id="confirmPassword"
             name="confirmPassword"
             placeholder="Re-enter your password"
-            value={formValues.confirmPassword}
+            value={formData.confirmPassword}
             onChange={handleChange}
-            required
           />
-          <span className="error">{errors.confirmPassword}</span>
         </div>
 
-        {/* Terms */}
+        {/* Terms - Ensure name="terms" matches state */}
         <div className="form-group inline">
           <label className="checkbox">
             <input
               type="checkbox"
-              id="terms"
               name="terms"
-              checked={formValues.terms}
+              checked={formData.terms}
               onChange={handleChange}
-              required
             />
             <span>I agree to the terms and conditions</span>
           </label>
-          <span className="error">{errors.terms}</span>
         </div>
 
-        <button type="submit" className="btn-primary">
-          Create account
+        <button type="submit" className="btn-primary" disabled={loading}>
+          {loading ? "Creating account..." : "Create account"}
         </button>
 
         <p className="footer-text">
-          Already have an account? <a href="/login">Log in</a>
+          Already have an account? <Link to="/login">Log in</Link>
         </p>
       </form>
     </div>

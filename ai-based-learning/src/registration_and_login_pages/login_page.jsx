@@ -1,150 +1,122 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../store/authContext";
+import authService from "../services/auth_service";
+import toast from "react-hot-toast";
 import "./style_login.css";
-const URL = "http://localhost:5000/api/auth/login"
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../store/auth";
 
 const LoginForm = () => {
-  const [values, setValues] = useState({
-    email: "",
-    password: "",
-    remember: false,
-  });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  // const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  // const [focusedField, setFocusedField] = useState("");
 
   const navigate = useNavigate();
-  const {storeTokenInLS} = useAuth();
-  const [errors, setErrors] = useState({});
-
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setValues((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  const validate = () => {
-    const newErrors = {};
-
-    if (!values.email.trim()) {
-      newErrors.email = "Email is required.";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
-      newErrors.email = "Enter a valid email.";
-    }
-
-    if (!values.password) {
-      newErrors.password = "Password is required.";
-    } else if (values.password.length < 8) {
-      newErrors.password = "Password must be at least 8 characters.";
-    }
-
-    return newErrors;
-  };
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    const validationErrors = validate();
-    setErrors(validationErrors);
+  if (!email || !password) {
+    toast.error("Email and password are required");
+    return;
+  }
 
-    if (Object.keys(validationErrors).length > 0) return;
-    
-    try {
-      const response = await fetch(URL, {
-        method: "POST",
-        headers: {
-          'Content-Type': "application/json"
-        },
-        body: JSON.stringify(values),
-      })
+  setLoading(true);
+  try {
+    const response = await authService.login(email, password);
 
-      const res_data = await response.json();
-      console.log("Response:",res_data)
-      if(response.ok){
-        alert("LoggedIn Successfully!!")
-        
-        //store the token in local storage
-        // localStorage.setItem("token", res_data.accessToken); 
-        storeTokenInLS(res_data.accessToken);
+    await login(response.user, response.accessToken, response.refreshToken);
+    navigate("/dashboard");
 
-        setValues({
-          email: "",
-          password: "",
-          remember: false,
-        })
-        navigate("/home");
-      }else{
-        alert("Invalid Credentials!!")
-        console.log("Invalid Credentials!!");
-      }
-      // console.log(await response.json());
-
-    } catch (error) {
-      console.log("login error:", error);
-    }
-
-    alert("Logged in! (Wire this to your backend auth)");
-  };
+  } catch (error) {
+    toast.error(
+      error?.response?.data?.message ||
+      error.message ||
+      "Login failed. Please check your credentials."
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
-    <div className="container">
-      <form className="form-card" noValidate onSubmit={handleSubmit}>
-        <h2>Welcome back</h2>
-        <p className="subtitle">Log in to continue</p>
+    <div className="relative flex items-center justify-center min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
+      
+      {/* Background pattern */}
+      <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-[length:16px_16px] opacity-40 pointer-events-none" />
 
-        <div className="form-group">
-          <label htmlFor="loginEmail">Email address</label>
-          <input
-            type="email"
-            id="loginEmail"
-            name="email"
-            placeholder="you@example.com"
-            value={values.email}
-            onChange={handleChange}
-            required
-          />
-          <span className="error">{errors.email}</span>
+      {/* Card */}
+      <div className="relative w-full max-w-md px-6">
+        <div className="bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-3xl shadow-xl shadow-slate-200/50 p-10 transition-all duration-300 hover:shadow-emerald-200/40">
+          
+          <form className="form-card text-center" onSubmit={handleSubmit}>
+            <h2>Welcome back!!</h2>
+            <p className="subtitle">Log in to continue</p>
+
+            {/* Email */}
+            <div className="form-group">
+              <label htmlFor="loginEmail">Email address</label>
+              <input
+                type="email"
+                id="loginEmail"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            {/* Password */}
+            <div className="form-group">
+              <label htmlFor="loginPassword">Password</label>
+              <input
+                type="password"
+                id="loginPassword"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                required
+              />
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              className="btn-primary"
+              disabled={loading}
+            >
+              {loading ? "Logging in..." : "Log in"}
+            </button>
+
+            {/* Footer */}
+            <div className="mt-8 pt-6 border-t border-slate-200/60">
+              <p className="text-sm text-slate-600">
+                Don&apos;t have an account?{" "}
+                <Link
+                  to="/registration"
+                  className="font-semibold text-emerald-600 hover:text-emerald-700 transition-colors duration-200"
+                >
+                  Create one
+                </Link>
+              </p>
+            </div>
+          </form>
         </div>
 
-        <div className="form-group">
-          <label htmlFor="loginPassword">Password</label>
-          <input
-            type="password"
-            id="loginPassword"
-            name="password"
-            placeholder="Enter your password"
-            value={values.password}
-            onChange={handleChange}
-            autoComplete="current-password"
-            required
-          />
-          <span className="error">{errors.password}</span>
-        </div>
-
-        <div className="form-group inline" style={{ justifyContent: "space-between" }}>
-          <label className="checkbox">
-            <input
-              type="checkbox"
-              id="remember"
-              name="remember"
-              checked={values.remember}
-              onChange={handleChange}
-            />
-            <span>Remember me</span>
-          </label>
-          <a href="/forgot-password" className="footer-text" style={{ margin: 0 }}>
-            Forgot password?
-          </a>
-        </div>
-
-        <button type="submit" className="btn-primary">
-          Log in
-        </button>
-
-        <p className="footer-text">
-          Don&apos;t have an account? <a href="/register">Create one</a>
+        {/* Terms */}
+        <p className="text-center text-xs text-slate-400 mt-6">
+          By logging in, you agree to our{" "}
+          <Link
+            to="/terms"
+            className="text-emerald-600 hover:text-emerald-700 transition-colors duration-200"
+          >
+            Terms of Service
+          </Link>
         </p>
-      </form>
+      </div>
     </div>
   );
 };

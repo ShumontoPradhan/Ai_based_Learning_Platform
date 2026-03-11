@@ -3,12 +3,12 @@ import {GoogleGenAI, Operations} from '@google/genai'
 
 dotenv.config();
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY})
-
 if(!process.env.GEMINI_API_KEY){
-    console.error("FATAL ERROR: GEMENI_API_KEY is not set in the environment variables.")
+    console.error("FATAL ERROR: GEMINI_API_KEY is not set in the environment variables.")
     process.exit(1);
 }
+
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY})
 
 /**
  * Generate flashcards from text

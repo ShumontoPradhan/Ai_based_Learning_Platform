@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import "./css/navbar.css";
+import "./navbar.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { FaBell } from "react-icons/fa";
 

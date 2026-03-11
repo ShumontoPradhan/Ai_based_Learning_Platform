@@ -63,7 +63,7 @@ export const uploadDocument = async(req, res, next)=>{
             userId: req.user._id,
             title,
             fileName: req.file.originalname,
-            filePath: fileURL,
+            filePath: fileURL,//stores the URL instead of the local path
             fileSize: req.file.size,
             status: 'processing'
         });

@@ -70,13 +70,27 @@ const getChatHistory = async (documentId) => {
   }
 };
 
+const llmChat = async (message, history = []) => {
+  try {
+    const response = await axiosInstance.post(API_PATHS.LLM.CHAT, {
+      message,
+      history,
+    });
+
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || { message: "LLM chat failed" };
+  }
+};
+
 const aiService = {
     generateFlashcards,
     generateQuiz,
     generateSummary,
     chat,
     explainConcept,
-    getChatHistory
+    getChatHistory,
+    llmChat
 }
 
 export default aiService;

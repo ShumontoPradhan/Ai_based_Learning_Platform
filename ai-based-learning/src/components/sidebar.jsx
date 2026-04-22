@@ -12,7 +12,7 @@ const navItems = [
   { label: "Skill Gap", icon: <FaBrain style={{ color: "", fontSize: "24px",}}/>, path: "/skill-gap" },
   { label: "Documents", icon: <FaFileAlt style={{ color: "", fontSize: "24px",}}/>, path: "/documents" },
   { label: "Flashcards", icon: <FaBookOpen style={{ color: "", fontSize: "24px",}}/>, path: "/flashcards" },
-  { label: "Achievements", icon: <FaTrophy style={{ color: "", fontSize: "24px",}}/>, path: "/achievements" },
+  { label: "Focus Mode", icon: <FaBrain style={{ color: "", fontSize: "24px",}}/>, path: "/focus-mode" },
   { label: "AI Assistant", icon: <FaRobot style={{ color: "", fontSize: "24px",}}/>, path: "/ai-assistant" },
   { label: "Assignments", icon: <FaClipboardList style={{ color: "", fontSize: "24px",}}/>, path: "/assignment" },
 ];

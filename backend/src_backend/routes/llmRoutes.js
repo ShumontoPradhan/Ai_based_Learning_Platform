@@ -1,12 +1,12 @@
 import express from "express";
-import { generateSmartResponse } from "../llm/smartResponse.js";
+import { generateChatResponse } from "../llm/smartResponse.js";
 
 const router = express.Router();
 
 // POST /api/llm/chat
 router.post("/chat", async (req, res, next) => {
   try {
-    const { message } = req.body;
+    const { message, history } = req.body;
 
     if (!message) {
       return res.status(400).json({
@@ -15,7 +15,7 @@ router.post("/chat", async (req, res, next) => {
       });
     }
 
-    const result = await generateSmartResponse(message);
+    const result = await generateChatResponse(message, history || []);
 
     res.json({
       success: true,

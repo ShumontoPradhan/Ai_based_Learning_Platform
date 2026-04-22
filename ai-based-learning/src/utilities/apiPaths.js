@@ -46,4 +46,8 @@ export const API_PATHS = {
     PROGRESS: {
     GET_DASHBOARD: "/api/progress/dashboard",
     },
+
+    LLM: {
+    CHAT: "/api/llm/chat",
+    }
 };

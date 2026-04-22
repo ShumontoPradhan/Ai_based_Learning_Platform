@@ -22,6 +22,8 @@ import FlashCards from "./pages/flash_cards/flash_cards.jsx";
 import QuizeTake from "./pages/quizes/quize_take.jsx";
 import QuizeResult from "./pages/quizes/quize_result.jsx";
 
+import FocusCard from "./components/focusCard/focusCard.jsx";
+
 import ProtectedRoute from "./store/ProtectedRoute.jsx";
 import { useAuth } from "./store/authContext.jsx";
 
@@ -61,7 +63,9 @@ function App() {
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/performance" element={<PerformancePrediction />} />
           <Route path="/explore" element={<ExplorePage />} />
-          <Route path="/achievements" element={<AchievementPage />} />
+
+          <Route path="/focus-mode" element={<FocusCard />} />
+
           <Route path="/ai-assistant" element={<AIChatInterface />} />
           <Route path="/skill-gap" element={<Skill />} />
           <Route path="/settings" element={<SettingsProfile />} />

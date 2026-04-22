@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./pages-css/ai-interface.css";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import aiService from "../services/ai_service";
 import { useParams } from "react-router-dom";
-
-const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
 
 const AIChatInterface = ({ shrink }) => {
   const [messages, setMessages] = useState([]);
@@ -13,12 +10,11 @@ const AIChatInterface = ({ shrink }) => {
 
   const { documentId } = useParams();
 
+  // Load chat history
   useEffect(() => {
     const fetchChatHistory = async () => {
       try {
-        const res = await aiService.getChatHistory(documentId); // 👈 pass correct id
-
-        console.log("CHAT HISTORY:", res.data.data);
+        const res = await aiService.getChatHistory(documentId);
 
         const formattedMessages = res.data.data.map((msg, index) => ({
           id: index,
@@ -33,8 +29,9 @@ const AIChatInterface = ({ shrink }) => {
     };
 
     fetchChatHistory();
-  }, []);
+  }, [documentId]);
 
+  // 🔥 Send message to LLM
   const handleSend = async () => {
     if (!input.trim()) return;
 
@@ -44,17 +41,34 @@ const AIChatInterface = ({ shrink }) => {
       text: input,
     };
 
-    setMessages((prev) => [...prev, userMessage]);
+    // Update UI immediately
+    const updatedMessages = [...messages, userMessage];
+    setMessages(updatedMessages);
     setInput("");
     setIsGenerating(true);
 
     try {
-      const model = genAI.getGenerativeModel({
-        model: "gemini-1.5-flash",
-      });
+      // ✅ Build proper history (user-bot pairs)
+      const history = [];
+      for (let i = 0; i < updatedMessages.length; i += 2) {
+        const user = updatedMessages[i];
+        const bot = updatedMessages[i + 1];
 
-      const result = await model.generateContent(input);
-      const aiText = result.response.text();
+        if (user && user.sender === "user") {
+          history.push({
+            user: user.text,
+            bot: bot && bot.sender === "ai" ? bot.text : "",
+          });
+        }
+      }
+
+      // ✅ Limit history (important for performance)
+      const limitedHistory = history.slice(-5);
+
+      // ✅ Call your backend service
+      const res = await aiService.llmChat(input, limitedHistory);
+
+      const aiText = res.reply;
 
       setMessages((prev) => [
         ...prev,
@@ -65,7 +79,8 @@ const AIChatInterface = ({ shrink }) => {
         },
       ]);
     } catch (error) {
-      console.error("Gemini Error:", error);
+      console.error("LLM Error:", error);
+
       setMessages((prev) => [
         ...prev,
         {
@@ -80,9 +95,7 @@ const AIChatInterface = ({ shrink }) => {
   };
 
   return (
-    <div
-      className="chat-container"
-    >
+    <div className="chat-container">
       <header className="chat-header">
         <div className="profile">
           <img
@@ -92,17 +105,14 @@ const AIChatInterface = ({ shrink }) => {
           />
           <div>
             <h3>Chat with AI Bot</h3>
-            <p>Online</p>
+            <p>Local LLM</p>
           </div>
         </div>
       </header>
 
       <main className="chat-body">
         {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`chat-bubble ${msg.sender}`}
-          >
+          <div key={msg.id} className={`chat-bubble ${msg.sender}`}>
             {msg.text}
           </div>
         ))}

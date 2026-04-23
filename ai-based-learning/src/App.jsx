@@ -26,16 +26,13 @@ import FocusCard from "./components/focusCard/focusCard.jsx";
 
 import ProtectedRoute from "./store/ProtectedRoute.jsx";
 import { useAuth } from "./store/authContext.jsx";
+import BrandLoader from "./components/brand/BrandLoader.jsx";
 
 function App() {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <p>Loading...</p>
-      </div>
-    );
+    return <BrandLoader message="Preparing your workspace" />;
   }
 
   return (
@@ -70,6 +67,7 @@ function App() {
           <Route path="/skill-gap" element={<Skill />} />
           <Route path="/settings" element={<SettingsProfile />} />
           <Route path="/assignment" element={<AssignmentSubmission />} />
+          <Route path="/achievements" element={<AchievementPage />} />
 
           <Route path="/documents" element={<DocumentsList />} />
           <Route path="/documents/:id" element={<DocumentsDetails />} />

@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import flashcardService from '../../services/flashcard_service.js';
-import PageHeader from '../../components/common/pageHeader.jsx';
+import AppPage from '../../components/shell/AppPage.jsx';
+import PageHeader from '../../components/shell/PageHeader.jsx';
 import Spinner from '../../components/common/spinner.jsx';
 import FlashcardSetCard from '../../pages/flash_cards/flashcard_set.jsx';
 import EmptyState from '../../components/common/EmptySpace.jsx';
@@ -28,7 +29,11 @@ const FlashCardsListPage =()=>{
 
     const renderContent =()=>{
         if(loading){
-            return <Spinner/>
+            return (
+              <div className="flex min-h-[40vh] items-center justify-center">
+                <Spinner/>
+              </div>
+            )
         }
 
     if(flashcardSets.length === 0){
@@ -49,10 +54,13 @@ const FlashCardsListPage =()=>{
     )
 }
     return(
-        <div>
-            <PageHeader title="All Flashcard Sets"/>
+        <AppPage>
+            <PageHeader
+              title="Flashcard sets"
+              description="Decks you generated from your documents. Open a document to create more."
+            />
             {renderContent()}
-        </div>
+        </AppPage>
     )
 }
 

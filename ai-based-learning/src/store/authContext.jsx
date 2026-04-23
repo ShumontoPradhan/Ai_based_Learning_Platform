@@ -75,10 +75,6 @@ export const AuthProvider = ({ children }) => {
     setUser(newUserData);
   };
 
-  // 🚨 VERY IMPORTANT
-  // BLOCK APP RENDER UNTIL AUTH RESTORE FINISHES
-  if (loading) return null;
-
   return (
     <AuthContext.Provider
       value={{

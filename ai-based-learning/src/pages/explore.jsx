@@ -1,156 +1,128 @@
 import React from "react";
-import "./pages-css/explore.css";
+import { Link } from "react-router-dom";
+import AppPage from "../components/shell/AppPage.jsx";
+import PageHeader from "../components/shell/PageHeader.jsx";
+import {
+  FileText,
+  MessageSquare,
+  BookOpen,
+  BrainCircuit,
+  BarChart3,
+  Layers,
+  ArrowUpRight,
+} from "lucide-react";
 
-const Explore = ({ shrink }) => {
+const FEATURES = [
+  {
+    title: "Documents",
+    desc: "Upload PDFs, read, summarize, and generate flashcards or quizzes from your material.",
+    to: "/documents",
+    icon: FileText,
+  },
+  {
+    title: "AI assistant",
+    desc: "Ask questions about your studies and get explanations in plain language.",
+    to: "/ai-assistant",
+    icon: MessageSquare,
+  },
+  {
+    title: "Flashcards",
+    desc: "Review decks built from your documents to lock in key ideas.",
+    to: "/flashcards",
+    icon: BookOpen,
+  },
+  {
+    title: "Quizzes",
+    desc: "Practice with quizzes from your uploads and track progress.",
+    to: "/documents",
+    icon: BrainCircuit,
+  },
+  {
+    title: "Performance",
+    desc: "Visualize trends and balance across skills (demo charts).",
+    to: "/performance",
+    icon: BarChart3,
+  },
+  {
+    title: "Skill gap",
+    desc: "Reflect on strengths and focus areas in a dedicated workspace.",
+    to: "/skill-gap",
+    icon: Layers,
+  },
+];
+
+const Explore = () => {
   return (
-    <div
-      className="explore-container"
-      // style={{
-      //   paddingLeft: shrink ? "100px" : "260px",
-      //   paddingRight: "30px",
-      //   paddingTop: "70px",
-      //   transition: "padding-left 0.3s ease",
-      // }}
-    >
-      {/* Header */}
-      <header className="header">
-        <span className="title">Explore</span>
-        <input
-          className="search-bar"
-          placeholder="Search topics, lessons, or teachers..."
-        />
-        <div className="filters">
-          <button className="filter-btn">Popular</button>
-          <button className="filter-btn">Science</button>
-          <button className="filter-btn">Programming</button>
-          <button className="filter-btn">Math</button>
-          <button className="filter-btn">Languages</button>
-          <button className="filter-btn">All</button>
-        </div>
-      </header>
+    <AppPage>
+      <PageHeader
+        title="Explore"
+        description="Every tile opens a real feature in LearnLab. Your material and progress stay yours."
+      />
 
-      {/* Main Content */}
-      <div className="main-content">
-        <main className="left-bar">
-          <h2 className="section-title">Trending Topics</h2>
-          <div className="topic-grid">
-            <div className="topic-card">
-              <span className="card-title">Machine Learning Basics</span>
-              <span className="card-desc">
-                Core concepts and hands-on teaching on machine learning
-                algorithms and workflows.
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {FEATURES.map(({ title, desc, to, icon: Icon }) => (
+          <Link
+            key={title}
+            to={to}
+            className="group card-elevated flex flex-col p-5 transition hover:border-indigo-200/80 hover:shadow-2xl hover:shadow-indigo-200/20"
+          >
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 transition group-hover:bg-indigo-100">
+                <Icon className="h-5 w-5" strokeWidth={2} />
               </span>
-              <span className="card-meta">124 sessions in progress</span>
-              <div className="card-avatars">
-                <span className="avatar"></span>
-                <span className="avatar"></span>
-                <span className="avatar"></span>
-              </div>
-              <button className="teach-btn">Teach This</button>
+              <ArrowUpRight className="h-4 w-4 text-slate-300 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-indigo-500" />
             </div>
-
-            <div className="topic-card">
-              <span className="card-title">Photosynthesis Explained</span>
-              <span className="card-desc">
-                Reverse teach the cycle, key ingredients, and plant cell
-                science.
-              </span>
-              <span className="card-meta">93 sessions in progress</span>
-              <div className="card-avatars">
-                <span className="avatar"></span>
-                <span className="avatar"></span>
-              </div>
-              <button className="teach-btn">Teach This</button>
-            </div>
-
-            <div className="topic-card">
-              <span className="card-title">Introduction to Python</span>
-              <span className="card-desc">
-                Teach loops, data types, and real-world Python use cases to the
-                AI.
-              </span>
-              <span className="card-meta">201 sessions in progress</span>
-              <div className="card-avatars">
-                <span className="avatar"></span>
-                <span className="avatar"></span>
-                <span className="avatar"></span>
-              </div>
-              <button className="teach-btn">Teach This</button>
-            </div>
-          </div>
-
-          <h2 className="section-title">Community Feed</h2>
-          <div className="topic-grid">
-            <div className="topic-card">
-              <span className="card-title">Quantum Computing</span>
-              <span className="card-desc">
-                Live reverse teaching session by @Jane_Doe
-              </span>
-              <span className="card-meta">Join now - 14 watching</span>
-              <div className="card-avatars">
-                <span className="avatar"></span>
-              </div>
-              <button className="teach-btn">Join Session</button>
-            </div>
-
-            <div className="topic-card">
-              <span className="card-title">Shakespeare's Sonnets</span>
-              <span className="card-desc">
-                Explore poetic structures and literary history in a collaborative
-                lesson.
-              </span>
-              <span className="card-meta">9 active teachers</span>
-              <div className="card-avatars">
-                <span className="avatar"></span>
-                <span className="avatar"></span>
-              </div>
-              <button className="teach-btn">Teach This</button>
-            </div>
-          </div>
-        </main>
-
-        {/* Sidebar */}
-        <aside className="right-bar">
-          <div className="spotlight">
-            <div className="section-title">Community Spotlight</div>
-            <div>
-              <strong>Top Teacher:</strong> @DrMathAI
-              <br />
-              <span style={{ color: "#7f7f90" }}>
-                “How Algebra Transforms Tech” — 340 upvotes
-              </span>
-            </div>
-            <hr className="divider" />
-            <div>
-              <strong>Featured Lesson:</strong>
-              <br />
-              Photosynthesis 101 — <em>by @GreenVibes</em>
-            </div>
-          </div>
-
-          <div className="suggestions">
-            <div className="section-title">For You</div>
-            <ul>
-              <li>Continue “Intro to Python”</li>
-              <li>Teach AI: Supply & Demand</li>
-              <li>Community Q: Explain Black Holes</li>
-            </ul>
-          </div>
-
-          <div className="challenge-mode">
-            🎲 Challenge Mode: Teach a Surprise Topic!
-          </div>
-        </aside>
+            <h2 className="text-base font-semibold text-slate-900">{title}</h2>
+            <p className="mt-1 flex-1 text-sm leading-relaxed text-slate-500">{desc}</p>
+            <span className="mt-4 text-xs font-bold uppercase tracking-wide text-indigo-600">
+              Open
+            </span>
+          </Link>
+        ))}
       </div>
 
-      {/* Footer */}
-      <footer className="footer">
-        © 2025 AI Learning Platform &nbsp;|&nbsp;
-        <a href="#" className="footer-link">Help</a> ·{" "}
-        <a href="#" className="footer-link">FAQ</a> ·{" "}
-        <a href="#" className="footer-link">Community Guidelines</a>
-      </footer>
-    </div>
+      <div className="mt-10 grid gap-6 lg:grid-cols-2">
+        <div className="card-elevated p-6">
+          <h3 className="text-sm font-semibold text-slate-900">Get started</h3>
+          <ol className="mt-3 list-inside list-decimal space-y-2 text-sm text-slate-600">
+            <li>
+              <Link to="/documents" className="font-medium text-indigo-600 hover:underline">
+                Upload a document
+              </Link>{" "}
+              (PDF).
+            </li>
+            <li>
+              Open the{" "}
+              <Link to="/ai-assistant" className="font-medium text-indigo-600 hover:underline">
+                AI assistant
+              </Link>{" "}
+              when you need a hint.
+            </li>
+            <li>
+              Check the{" "}
+              <Link to="/dashboard" className="font-medium text-indigo-600 hover:underline">
+                Dashboard
+              </Link>{" "}
+              for live stats and activity.
+            </li>
+          </ol>
+        </div>
+        <div className="rounded-2xl border border-dashed border-indigo-200/80 bg-indigo-50/40 p-6">
+          <h3 className="text-sm font-semibold text-indigo-950">Tips</h3>
+          <ul className="mt-2 space-y-2 text-sm text-indigo-900/80">
+            <li>· Smaller PDFs run faster for AI features.</li>
+            <li>· Revisit flashcards after a quiz to fix weak spots.</li>
+            <li>· Use Focus mode when you need zero distractions.</li>
+          </ul>
+        </div>
+      </div>
+
+      <p className="mt-8 text-center text-xs text-slate-400">
+        <Link to="/settings" className="text-indigo-500 hover:underline">
+          Account settings
+        </Link>
+      </p>
+    </AppPage>
   );
 };
 

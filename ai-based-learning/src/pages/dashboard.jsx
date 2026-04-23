@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Spinner from "../components/common/spinner";
+import AppPage from "../components/shell/AppPage.jsx";
+import PageHeader from "../components/shell/PageHeader.jsx";
 import progressService from "../services/progress_services";
 import toast from "react-hot-toast";
 import { FileText, BookOpen, BrainCircuit, TrendingUp, Clock } from "lucide-react";
@@ -13,7 +16,7 @@ export default function DashboardPage() {
       try {
         const data = await progressService.getDashboardData();
         setDashboardData(data.data);
-      } catch (error) {
+      } catch {
         toast.error("Failed to fetch dashboard data");
       } finally {
         setLoading(false);
@@ -26,17 +29,22 @@ export default function DashboardPage() {
     return <Spinner />;
   }
 
-  // ✅ FIXED CONDITION
   if (!dashboardData || !dashboardData.overview) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-100 mb-4">
-            <TrendingUp className="w-8 h-8 text-slate-400" />
+      <AppPage>
+        <div className="flex min-h-[50vh] flex-col items-center justify-center text-center">
+          <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100">
+            <TrendingUp className="h-8 w-8 text-slate-400" />
           </div>
-          <p className="text-sm text-slate-600">No Dashboard Data Available</p>
+          <p className="text-sm font-medium text-slate-600">No dashboard data yet</p>
+          <p className="mt-1 text-xs text-slate-500">
+            Upload a document or take a quiz to populate stats.
+          </p>
+          <Link to="/documents" className="btn-brand mt-6">
+            Go to documents
+          </Link>
         </div>
-      </div>
+      </AppPage>
     );
   }
 
@@ -64,123 +72,108 @@ export default function DashboardPage() {
     },
   ];
 
-  const activities = [
-    ...(dashboardData.recentActivity?.documents || []).map((doc) => ({
-      id: doc._id,
-      description: doc.title,
-      timestamp: doc.lastAccessed,
-      link: `/documents/${doc._id}`,
-      type: "document",
-    })),
-    ...(dashboardData.recentActivity?.quizzes || []).map((quiz) => ({
-      id: quiz._id,
-      description: quiz.title,
-      timestamp: quiz.lastAttempted,
-      link: `/quizzes/${quiz._id}`,
-      type: "quiz",
-    })),
-  ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
   return (
-    <div className="min-h-screen">
-      <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px, transparent_1px)] bg-size-[16px 16px] opacity-30 pointer-events-none"></div>
-      <div className="relative max-w-7xl mx-auto">
-      {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl font-medium text-slate-800 tracking-tight mb-2">Dashboard</h1>
-        <p className="text-slate-500 text-sm">Track your learning progress and activity</p>
-      </div>
+    <AppPage>
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] bg-[length:16px_16px] opacity-30" />
+      <PageHeader
+        title="Dashboard"
+        description="Track documents, flashcards, quizzes, and what you have opened recently."
+      />
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-5">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {stats.map((stat, index) => (
-          <div key={index} className="group relative bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-2xl shadow-xl shadow-slate-200/50 p-6 hover:shadow-2xl hover:shadow-slate-300/50 transition-all duration-300 hower:-translate-y-1">
+          <div
+            key={index}
+            className="group relative rounded-2xl border border-slate-200/60 bg-white/80 p-6 shadow-xl shadow-slate-200/50 backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-slate-300/50"
+          >
             <div className="flex items-center justify-between">
-
-              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
                 {stat.label}
               </span>
-              <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${stat.gradient} ${stat.shadowColor} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-              <stat.icon className="w-5 h-5 text-white" strokeWidth={2} />
+              <div
+                className={`flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br ${stat.gradient} ${stat.shadowColor} transition-transform duration-300 group-hover:scale-110`}
+              >
+                <stat.icon className="h-5 w-5 text-white" strokeWidth={2} />
               </div>
             </div>
-            <div className="text-3xl font-semibold text-slate-900 tracking-tight">
-              {stat.value}
-            </div>
+            <div className="text-3xl font-semibold tracking-tight text-slate-900">{stat.value}</div>
           </div>
         ))}
       </div>
 
-      {/* Recent Activity */}
-      <div className="bg-white/80 backdrop-blur-xl border border-slate-200/60 rounded-2xl shadow-xl shadow-slate-200/50 p-8 mt-6">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-400 to-orange-600 flex items-center justify-center">
-              <Clock className="w-5 h-5 text-white" strokeWidth={2}/>
-            </div>
-            <h3 className="text-xl font-medium text-slate-900 tracking-tight">
-              Recent Activity
-            </h3>
+      <div className="mt-6 rounded-2xl border border-slate-200/60 bg-white/80 p-8 shadow-xl shadow-slate-200/50 backdrop-blur-xl">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-yellow-400 to-orange-600">
+            <Clock className="h-5 w-5 text-white" strokeWidth={2} />
           </div>
+          <h3 className="text-xl font-medium tracking-tight text-slate-900">Recent activity</h3>
+        </div>
 
-        {dashboardData.recentActivity && (dashboardData.recentActivity.documents.length>0 || dashboardData.recentActivity.quizzes.length>0) ? (
-            <div className="space-y-3">
-              {[
-                ...(dashboardData.recentActivity.documents || []).map(doc=>({
-                  id: doc._id,
-                  description: doc.title,
-                  timestamp: doc.lastAccessed,
-                  link: `/documents/${doc._id}`,
-                  type: "document",
-                })),
-                ...(dashboardData.recentActivity.quizzes || []).map(quiz=>({
-                  id: quiz._id,
-                  description: quiz.title,
-                  timestamp: quiz.lastAttempted,    
-                  link: `/quizzes/${quiz._id}`,
-                  type: "quiz",
-                })),
-              ]
-              .sort((a,b)=> new Date(b.timestamp) - new Date(a.timestamp))
-              .map((activity, index)=>(
-                <div 
-                  key={activity.id||index} className="group flex items-center justify-between p-4 rounded-xl bg-slate-50/50 border-slate-200/60 hover:bg-white hover:border-slate-300/60 hover:shadow-md transition-all duration-200"
+        {dashboardData.recentActivity &&
+        (dashboardData.recentActivity.documents.length > 0 ||
+          dashboardData.recentActivity.quizzes.length > 0) ? (
+          <div className="space-y-3">
+            {[
+              ...(dashboardData.recentActivity.documents || []).map((doc) => ({
+                id: doc._id,
+                description: doc.title,
+                timestamp: doc.lastAccessed,
+                link: `/documents/${doc._id}`,
+                type: "document",
+              })),
+              ...(dashboardData.recentActivity.quizzes || []).map((quiz) => ({
+                id: quiz._id,
+                description: quiz.title,
+                timestamp: quiz.lastAttempted,
+                link: `/quizzes/${quiz._id}`,
+                type: "quiz",
+              })),
+            ]
+              .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+              .map((activity, index) => (
+                <div
+                  key={activity.id || index}
+                  className="group flex items-center justify-between rounded-xl border border-slate-200/60 bg-slate-50/50 p-4 transition-all duration-200 hover:border-slate-300/60 hover:bg-white hover:shadow-md"
                 >
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <div className={`w-2 h-2 rounded-full ${
-                        activity.type === 'document'
-                        ? 'bg-gradient-to-r from-blue-400 to-cyan-500'
-                        :'bg-gradient-to-r from-emerald-400 to-teal-500'
-                      }`}></div>
-                      <p className="text-sm font-medium text-slate-900 truncate">
-                        {activity.type === 'document' ? "Document Accessed" : "Quiz Attempted"}
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-1 flex items-center gap-2">
+                      <div
+                        className={`h-2 w-2 rounded-full ${
+                          activity.type === "document"
+                            ? "bg-gradient-to-r from-blue-400 to-cyan-500"
+                            : "bg-gradient-to-r from-emerald-400 to-teal-500"
+                        }`}
+                      />
+                      <p className="truncate text-sm font-medium text-slate-900">
+                        {activity.type === "document" ? "Document" : "Quiz"}:{" "}
                         <span className="text-slate-700">{activity.description}</span>
                       </p>
                     </div>
-                    <p className="text-xs text-slate-500 pl-4">
+                    <p className="pl-4 text-xs text-slate-500">
                       {new Date(activity.timestamp).toLocaleString()}
                     </p>
                   </div>
-                  {activity.link &&(
-                    <a href={activity.link}
-                    className="ml-4 px-4 py-2 text-xs font-semibold text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50 rounded-lg transition-all duration-200 whitespace-nowrap flex items-center gap-1">
-                      view
-                    </a>
+                  {activity.link && (
+                    <Link
+                      to={activity.link}
+                      className="ml-4 flex items-center gap-1 whitespace-nowrap rounded-lg px-4 py-2 text-xs font-semibold text-indigo-600 transition hover:bg-indigo-50 hover:text-indigo-800"
+                    >
+                      Open
+                    </Link>
                   )}
                 </div>
               ))}
+          </div>
+        ) : (
+          <div className="py-12 text-center">
+            <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
+              <Clock className="h-8 w-8 text-slate-400" />
             </div>
-          ):(
-            <div className="text-center py-12">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4">
-                <Clock className="w-8 h-8 text-slate-400"/>
-              </div>
-              <p className="text-sm text-slate-600">No recent Activity yet.</p>
-              <p className="text-xs text-slate-500 mt-1">Start learning to see your activity here.</p>
-            </div>
-          )}
-        </div>
+            <p className="text-sm text-slate-600">No recent activity yet.</p>
+            <p className="mt-1 text-xs text-slate-500">Start learning to see your activity here.</p>
+          </div>
+        )}
       </div>
-    </div>
+    </AppPage>
   );
 }

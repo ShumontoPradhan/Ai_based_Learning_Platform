@@ -1,15 +1,26 @@
 import React from "react";
 import {
-  LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, ResponsiveContainer,
-  RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  ResponsiveContainer,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  Radar,
 } from "recharts";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
-import { Brain, TrendingUp, Target, Activity } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { BiBorderOuter, BiBorderRadius } from "react-icons/bi";
+import { Brain, TrendingUp, Target, Activity, BarChart3 } from "lucide-react";
+import AppPage from "../components/shell/AppPage.jsx";
+import PageHeader from "../components/shell/PageHeader.jsx";
+import { Link } from "react-router-dom";
 
-export default function PerformancePrediction({ shrink }) {
+export default function PerformancePrediction() {
   const weeklyData = [
     { week: "W1", score: 65 },
     { week: "W2", score: 72 },
@@ -19,102 +30,95 @@ export default function PerformancePrediction({ shrink }) {
   ];
 
   const skillRadar = [
-    { skill: "Coding", level: 85 },
-    { skill: "Design", level: 70 },
-    { skill: "Strategy", level: 65 },
-    { skill: "Teamwork", level: 80 },
-    { skill: "Analysis", level: 75 },
+    { skill: "Theory", level: 85 },
+    { skill: "Practice", level: 70 },
+    { skill: "Focus", level: 65 },
+    { skill: "Retrieval", level: 80 },
+    { skill: "Explanations", level: 75 },
   ];
 
   const consistency = 88;
 
   const aiInsights = [
     {
-      title: "Next Week Improvement",
+      title: "Projected lift",
       value: "+14%",
-      desc: "AI predicts steady upward trend",
-      color: "text-green-500",
-      icon: <TrendingUp className="text-green-500" size={22} />,
+      desc: "Illustrative trend if study rhythm continues",
+      color: "text-emerald-600",
+      icon: <TrendingUp className="text-emerald-500" size={22} />,
     },
     {
-      title: "Focus Skill Area",
+      title: "Focus area",
       value: "Strategy",
-      desc: "Potential 18% gain if practiced",
-      color: "text-indigo-500",
+      desc: "Where an extra block of practice helps most (demo data)",
+      color: "text-indigo-600",
       icon: <Target className="text-indigo-500" size={22} />,
     },
     {
-      title: "Consistency",
+      title: "Session consistency",
       value: `${consistency}%`,
-      desc: "Maintain above 80% for optimal growth",
-      color: "text-blue-500",
-      icon: <Activity className="text-blue-500" size={22} />,
+      desc: "Time-on-task this month (sample metric)",
+      color: "text-sky-600",
+      icon: <Activity className="text-sky-500" size={22} />,
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 p-8 text-gray-800"
-    // style={{
-    //   paddingLeft: shrink ? "100px" : "260px",
-    //   transition: "padding-left 0.3s ease",
-    //   marginTop: "40px",
-      
-    // }}
-    >
-      <header className="header">
-          <span className="title"> <Brain className="text-indigo-500" />Performance Prediction</span>
-          <div className="subtitle">
-            Monitor your performance through ai visualization!!
-          </div>
-          </header>
-      <motion.div
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="flex items-center justify-between mb-8"
-      >
-        
-        
-      </motion.div>
+    <AppPage>
+      <PageHeader
+        title="Performance"
+        description="Visualize study momentum and balance across skills. Data below is a polished demo — connect your analytics API for live numbers."
+        action={
+          <span className="inline-flex items-center gap-1.5 text-indigo-600">
+            <BarChart3 className="h-4 w-4" />
+            <span className="text-sm font-medium">Demo insights</span>
+          </span>
+        }
+      />
 
-      {/* Overview Stats */}
+      <div className="mb-2 flex items-center gap-2 text-amber-800">
+        <Brain className="h-5 w-5 text-indigo-500" />
+        <p className="text-sm text-slate-600">
+          Pair this view with <Link to="/dashboard" className="font-semibold text-indigo-600 hover:underline">Dashboard</Link> for
+          your real document and quiz activity.
+        </p>
+      </div>
+
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
+        transition={{ delay: 0.1 }}
+        className="mb-8 grid grid-cols-1 gap-5 md:grid-cols-3"
       >
         {aiInsights.map((insight, i) => (
           <Card
             key={i}
-            className="shadow-md border border-slate-200 hover:shadow-lg transition-all bg-white/80 backdrop-blur-sm"
+            className="card-elevated border-0 bg-white/90 shadow-xl shadow-slate-200/40 transition hover:shadow-2xl"
           >
-            <CardContent className="p-5 flex items-start gap-3">
+            <CardContent className="flex items-start gap-3 p-5">
               {insight.icon}
               <div>
-                <h3 className="font-semibold">{insight.title}</h3>
-                <p className={`text-2xl font-bold ${insight.color}`}>
-                  {insight.value}
-                </p>
-                <p className="text-sm text-gray-500">{insight.desc}</p>
+                <h3 className="text-sm font-medium text-slate-500">{insight.title}</h3>
+                <p className={`text-2xl font-bold ${insight.color}`}>{insight.value}</p>
+                <p className="text-sm text-slate-500">{insight.desc}</p>
               </div>
             </CardContent>
           </Card>
         ))}
       </motion.div>
 
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Line Chart */}
-        <Card className="shadow-md border-slate-200">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <Card className="card-elevated border-slate-200/80">
           <CardContent className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Weekly Progress</h2>
+            <h2 className="mb-4 text-lg font-semibold text-slate-900">Weekly trend</h2>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={weeklyData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="week" />
-                <YAxis domain={[0, 100]} />
-                <Tooltip />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis dataKey="week" tick={{ fontSize: 12 }} />
+                <YAxis domain={[0, 100]} tick={{ fontSize: 12 }} />
+                <Tooltip
+                  contentStyle={{ borderRadius: 12, border: "1px solid #e2e8f0" }}
+                />
                 <Line
                   type="monotone"
                   dataKey="score"
@@ -127,21 +131,20 @@ export default function PerformancePrediction({ shrink }) {
           </CardContent>
         </Card>
 
-        {/* Radar Chart */}
-        <Card className="shadow-md border-slate-200">
+        <Card className="card-elevated border-slate-200/80">
           <CardContent className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Skill Development Radar</h2>
+            <h2 className="mb-4 text-lg font-semibold text-slate-900">Skill balance</h2>
             <ResponsiveContainer width="100%" height={300}>
               <RadarChart cx="50%" cy="50%" outerRadius="80%" data={skillRadar}>
-                <PolarGrid />
-                <PolarAngleAxis dataKey="skill" />
-                <PolarRadiusAxis domain={[0, 100]} />
+                <PolarGrid stroke="#e2e8f0" />
+                <PolarAngleAxis dataKey="skill" tick={{ fontSize: 11, fill: "#64748b" }} />
+                <PolarRadiusAxis domain={[0, 100]} tick={{ fontSize: 10 }} />
                 <Radar
-                  name="Skill Level"
+                  name="Level"
                   dataKey="level"
                   stroke="#8b5cf6"
                   fill="#8b5cf6"
-                  fillOpacity={0.5}
+                  fillOpacity={0.4}
                 />
                 <Tooltip />
               </RadarChart>
@@ -150,20 +153,18 @@ export default function PerformancePrediction({ shrink }) {
         </Card>
       </div>
 
-      {/* Consistency & AI Insight Section */}
-      <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Consistency Tracker */}
-        <Card className="lg:col-span-1 shadow-md border-slate-200">
+      <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <Card className="card-elevated lg:col-span-1">
           <CardContent className="p-6">
-            <h2 className="text-xl font-semibold mb-3">Consistency Tracker</h2>
-            <p className="text-gray-600 mb-4">
-              You’ve been consistent for{" "}
-              <span className="font-semibold text-indigo-600">{consistency}%</span>{" "}
-              of the time this month. Keep this up to unlock predictive accuracy gains.
+            <h2 className="mb-2 text-lg font-semibold text-slate-900">Consistency</h2>
+            <p className="mb-4 text-sm text-slate-600">
+              You have been in-session for about{" "}
+              <span className="font-semibold text-indigo-600">{consistency}%</span> of
+              scheduled study windows (sample).
             </p>
-            <div className="w-full bg-slate-200 h-4 rounded-full overflow-hidden">
+            <div className="h-3 w-full overflow-hidden rounded-full bg-slate-200">
               <motion.div
-                className="bg-indigo-500 h-4"
+                className="h-3 rounded-full bg-gradient-to-r from-indigo-500 to-violet-500"
                 initial={{ width: 0 }}
                 animate={{ width: `${consistency}%` }}
                 transition={{ duration: 1 }}
@@ -172,30 +173,33 @@ export default function PerformancePrediction({ shrink }) {
           </CardContent>
         </Card>
 
-        {/* AI Insights */}
-        <Card className="lg:col-span-2 shadow-md border-slate-200 bg-gradient-to-r from-indigo-50 via-purple-50 to-slate-50">
+        <Card className="card-elevated border-indigo-100/80 bg-gradient-to-br from-indigo-50/90 via-violet-50/50 to-white lg:col-span-2">
           <CardContent className="p-6">
-            <h2 className="text-xl font-semibold mb-3 flex items-center gap-2">
-              <Brain className="text-indigo-500" /> AI Predicted Analysis
+            <h2 className="mb-2 flex items-center gap-2 text-lg font-semibold text-slate-900">
+              <Brain className="h-5 w-5 text-indigo-500" />
+              Narrative summary
             </h2>
-            <p className="text-gray-700 leading-relaxed mb-4">
-              Based on your recent learning velocity and engagement trends, 
-              our AI model forecasts a{" "}
-              <span className="font-semibold text-green-600">+14% performance increase</span>{" "}
-              next cycle. Strategic thinking and consistency remain your key accelerators.
+            <p className="mb-4 text-sm leading-relaxed text-slate-700">
+              This panel is a template for a future model: combine quiz scores, time on
+              documents, and AI chat usage to surface one clear story per week.
             </p>
-            <div className="flex items-center gap-4">
-              <Button className="bg-indigo-500 hover:bg-indigo-600 text-white">
-                View Deep Analysis
-              </Button>
-              <Button className="bg-indigo-500 hover:bg-indigo-600 text-white">
-                Export Report
-              </Button>
-              <Button variant="outline">Compare with Peers</Button>         
+            <div className="flex flex-wrap gap-2">
+              <Link
+                to="/skill-gap"
+                className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-indigo-700"
+              >
+                Open skill gap
+              </Link>
+              <Link
+                to="/documents"
+                className="inline-flex items-center justify-center rounded-lg border border-indigo-200 bg-white/80 px-4 py-2 text-sm font-medium text-indigo-700 transition hover:bg-indigo-50"
+              >
+                Study materials
+              </Link>
             </div>
           </CardContent>
         </Card>
       </div>
-    </div>
+    </AppPage>
   );
 }

@@ -1,10 +1,36 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import "./navbar.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
 import { FaBell } from "react-icons/fa";
+import { useAuth } from "../store/authContext.jsx";
+
+function initialsForUser(user) {
+  if (!user) return "?";
+  const name = (user.username || user.email || "?").trim();
+  if (!name || name === "?") return "?";
+  if (name.includes("@")) {
+    const local = name.split("@")[0] || name;
+    return local.slice(0, 2).toUpperCase();
+  }
+  return name.slice(0, 2).toUpperCase();
+}
+
+function nameForUser(user) {
+  if (!user) return "Account";
+  const u = user.username?.trim();
+  if (u) return u;
+  const em = user.email?.trim();
+  if (em) return em.split("@")[0] || em;
+  return "Account";
+}
 
 export default function Navbar({ title, mode, toggleMode, paletteMode, shrink, aboutTxt }) {
+  const { user } = useAuth();
+  const displayName = nameForUser(user);
+  const initials = initialsForUser(user);
+
   const [hidden, setHidden] = useState(false);
   const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -44,20 +70,24 @@ export default function Navbar({ title, mode, toggleMode, paletteMode, shrink, a
       aria-label="Top navigation"
     >
       <div className="navbar-inner">
-        <a
+        <Link
           className="navbar-brand"
-          href="/"
+          to="/home"
           style={{
-            fontSize: "1.28rem",
-            fontWeight: 700,
+            fontSize: "1.2rem",
+            fontWeight: 800,
             paddingLeft: "40px",
-            color: "#111827",
+            background: "linear-gradient(90deg, #1e1b4b, #4f46e5, #7c3aed)",
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            backgroundClip: "text",
             textDecoration: "none",
             marginRight: "18px",
+            letterSpacing: "-0.02em",
           }}
         >
           {title}
-        </a>
+        </Link>
 
         {/* SEARCH */}
         <form className="search-div" role="search" onSubmit={(e) => e.preventDefault()}>
@@ -80,9 +110,9 @@ export default function Navbar({ title, mode, toggleMode, paletteMode, shrink, a
             <span className="notification-badge">3</span>
           </button>
 
-          <div className="user-profile">
-            <div className="user-avatar">JS</div>
-            <span className="user-name">John Student</span>
+          <div className="user-profile" title={user?.email || displayName}>
+            <div className="user-avatar">{initials}</div>
+            <span className="user-name">{displayName}</span>
           </div>
         </div>
       </div>
@@ -98,7 +128,7 @@ Navbar.propTypes = {
 };
 
 Navbar.defaultProps = {
-  title: "Set title here",
+  title: "LearnLab",
   aboutTxt: "About",
   shrink: false,
   mode: "light",

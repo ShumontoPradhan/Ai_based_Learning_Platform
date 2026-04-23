@@ -1,7 +1,9 @@
-/* Root typography */
+/* LearnLab auth — shared form styles (indigo / violet) */
+
 .form-card h2 {
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: 1.75rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   color: #0f172a;
   margin-bottom: 0.25rem;
 }
@@ -9,32 +11,30 @@
 .subtitle {
   font-size: 0.95rem;
   color: #64748b;
-  margin-bottom: 2rem;
+  margin-bottom: 1.75rem;
 }
 
-/* Form groups */
 .form-group {
   display: flex;
   flex-direction: column;
   text-align: left;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.15rem;
 }
 
 .form-group label {
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 0.8rem;
+  font-weight: 600;
   color: #475569;
   margin-bottom: 0.35rem;
 }
 
-/* Inputs */
 .form-group input {
   padding: 0.75rem 0.9rem;
   border-radius: 0.75rem;
-  border: 1px solid #cbd5e1;
-  background: rgba(255, 255, 255, 0.85);
+  border: 2px solid #e2e8f0;
+  background: #fff;
   font-size: 0.95rem;
-  transition: all 0.25s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .form-group input::placeholder {
@@ -42,42 +42,42 @@
 }
 
 .form-group input:hover {
-  border-color: #94a3b8;
+  border-color: #cbd5e1;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.25);
+  border-color: #818cf8;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
 }
 
-/* Button */
 .btn-primary {
   width: 100%;
   padding: 0.8rem;
   font-size: 0.95rem;
-  font-weight: 600;
-  color: white;
+  font-weight: 700;
+  color: #fff;
   border-radius: 0.75rem;
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, #4f46e5, #7c3aed 55%, #9333ea);
   border: none;
   cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.35);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+  box-shadow: 0 10px 30px -8px rgba(79, 70, 229, 0.55);
+  margin-top: 0.25rem;
 }
 
 .btn-primary:hover {
   transform: translateY(-1px);
-  box-shadow: 0 12px 30px rgba(16, 185, 129, 0.45);
+  box-shadow: 0 14px 36px -6px rgba(79, 70, 229, 0.6);
 }
 
 .btn-primary:active {
   transform: translateY(0);
-  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
 }
 
 .btn-primary:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   box-shadow: none;
+  transform: none;
 }

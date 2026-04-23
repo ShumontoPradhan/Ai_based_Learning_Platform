@@ -1,154 +1,109 @@
 import "./sidebar.css";
 import React from "react";
-import { NavLink } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import { Menu } from "lucide-react";
-import { FaHome, FaCompass, FaChartLine, FaBrain, FaFileAlt, FaTrophy, FaRobot, FaBeer, FaClipboardList, FaBookOpen } from "react-icons/fa";
+import { NavLink, useNavigate } from "react-router-dom";
+import {
+  Menu,
+  Home,
+  LayoutDashboard,
+  Compass,
+  LineChart,
+  Brain,
+  FileText,
+  BookOpen,
+  Scan,
+  Bot,
+  ClipboardList,
+  Trophy,
+  Settings,
+} from "lucide-react";
 
 const navItems = [
-  { label: "Home", icon: <FaHome style={{ color: "", fontSize: "24px",}} />, path: "/home" },
-  { label: "Explore", icon: <FaCompass style={{ color: "", fontSize: "24px",}}/>, path: "/explore" },
-  { label: "Performance", icon: <FaChartLine style={{ color: "", fontSize: "24px",}}/>, path: "/performance" },
-  { label: "Skill Gap", icon: <FaBrain style={{ color: "", fontSize: "24px",}}/>, path: "/skill-gap" },
-  { label: "Documents", icon: <FaFileAlt style={{ color: "", fontSize: "24px",}}/>, path: "/documents" },
-  { label: "Flashcards", icon: <FaBookOpen style={{ color: "", fontSize: "24px",}}/>, path: "/flashcards" },
-  { label: "Focus Mode", icon: <FaBrain style={{ color: "", fontSize: "24px",}}/>, path: "/focus-mode" },
-  { label: "AI Assistant", icon: <FaRobot style={{ color: "", fontSize: "24px",}}/>, path: "/ai-assistant" },
-  { label: "Assignments", icon: <FaClipboardList style={{ color: "", fontSize: "24px",}}/>, path: "/assignment" },
+  { label: "Home", icon: Home, path: "/home" },
+  { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
+  { label: "Explore", icon: Compass, path: "/explore" },
+  { label: "Performance", icon: LineChart, path: "/performance" },
+  { label: "Skill gap", icon: Brain, path: "/skill-gap" },
+  { label: "Documents", icon: FileText, path: "/documents" },
+  { label: "Flashcards", icon: BookOpen, path: "/flashcards" },
+  { label: "Focus mode", icon: Scan, path: "/focus-mode" },
+  { label: "AI assistant", icon: Bot, path: "/ai-assistant" },
+  { label: "Assignments", icon: ClipboardList, path: "/assignment" },
+  { label: "Achievements", icon: Trophy, path: "/achievements" },
 ];
 
 const Sidebar = ({ onToggle, shrink }) => {
   const navigate = useNavigate();
+
   return (
     <>
-      {/* Toggle Button */}
       <button
+        type="button"
         className="menu-btn"
+        style={{ left: shrink ? 85 : 245 }}
         onClick={onToggle}
-        style={{
-          position: "fixed",
-          top: "12px",
-          left: shrink ? "85px" : "245px",
-          zIndex: 2000,
-          background: "linear-gradient(135deg, #3b82f6, #8b5cf6)",
-          border: "none",
-          borderRadius: "12px",
-          width: "42px",
-          height: "42px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-          color: "#fff",
-          cursor: "pointer",
-          transition: "all 0.3s ease",
-        }}
-        onMouseEnter={(e) =>
-          (e.currentTarget.style.boxShadow = "0 6px 18px rgba(139, 92, 246, 0.5)")
-        }
-        onMouseLeave={(e) =>
-          (e.currentTarget.style.boxShadow = "0 4px 12px rgba(0,0,0,0.2)")
-        }
+        aria-label={shrink ? "Expand sidebar" : "Collapse sidebar"}
       >
-        <Menu size={22} />
+        <Menu size={20} strokeWidth={2.25} />
       </button>
 
-
-      {/* Sidebar */}
-      <div
-        className={`sidebar ${shrink ? "shrink" : ""}`}
-        style={{
-          position: "fixed",
-          paddingTop: "56px",
-          top: 0,
-          left: 0,
-          margin: "0 0 0",
-          width: shrink ? "80px" : "240px",
-          height: "100vh",
-          transition: "width 0.3s ease",
-          overflowX: "hidden",
-          boxShadow: "0 0 12px rgba(0, 0, 0, 0.3)",
-          zIndex: 1050,
-          display: "flex",
-          flexDirection: "column",
-          background: "#121212",
-        }}
+      <aside
+        className={`app-sidebar${shrink ? " app-sidebar--shrink" : ""}`}
+        aria-label="Main navigation"
       >
-        {/* Logo */}
-        <button
-          className="sidebar-logo d-flex align-items-center mb-3 px-3 pt-2"
-          onClick={() => navigate("/dashboard")}
-          style={{
-            height: "56px",
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "center",
-            background: "#121212",
-            border: "none",
-          }}
-        >
-          <div
-            className="logo-icon d-flex align-items-center justify-content-center"
-            style={{
-              background: "linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)",
-              color: "#fff",
-              borderRadius: "10px",
-              width: "40px",
-              height: "30px",
-              fontWeight: "700",
-              fontSize: "1.1rem",
-            }}
+        <div className="app-sidebar__inner">
+          <button
+            type="button"
+            className="app-sidebar__brand"
+            onClick={() => navigate("/home")}
           >
-            AI
-          </div>
+            <div className="app-sidebar__logo">LL</div>
+            {!shrink && <span className="app-sidebar__title">LearnLab</span>}
+          </button>
 
-          {!shrink && (
-            <span
-              className="logo-text ms-2 fw-bold"
-              style={{
-                background: "linear-gradient(90deg, #0b69f5, #b9108c)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                fontSize: "1.2rem",
-              }}
+          <nav className="app-sidebar__nav" role="navigation">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <NavLink
+                  key={item.path}
+                  to={item.path}
+                  className={({ isActive }) =>
+                    `app-sidebar__link${isActive ? " app-sidebar__link--active" : ""}`
+                  }
+                  end={item.path === "/home"}
+                >
+                  <Icon
+                    className="app-sidebar__icon"
+                    size={20}
+                    strokeWidth={2}
+                    aria-hidden
+                  />
+                  {!shrink && <span>{item.label}</span>}
+                </NavLink>
+              );
+            })}
+          </nav>
+
+          <div className="app-sidebar__footer">
+            <NavLink
+              to="/settings"
+              className={({ isActive }) =>
+                `app-sidebar__link app-sidebar__link--footer${
+                  isActive ? " app-sidebar__link--active" : ""
+                }`
+              }
             >
-              AI Learning
-            </span>
-          )}
-        </button>
-
-        {/* Nav Links */}
-        <ul className="nav flex-column px-2">
-          {navItems.map((item) => (
-            <li key={item.label} className="nav-item mb-1">
-              <NavLink
-                to={item.path}
-                className={({ isActive }) =>
-                  `nav-link d-flex align-items-center text-light rounded px-3 py-2 ${
-                    isActive ? "active" : ""
-                  }`
-                }
-                end
-              >
-                <span className="fs-5 me-2">{item.icon}</span>
-                {!shrink && <span>{item.label}</span>}
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-
-        {/* Bottom Section */}
-        <hr className="text-secondary mx-3" />
-        <div className="px-3">
-          <NavLink
-            to="/settings"
-            className="nav-link d-flex align-items-center text-light px-3 py-2 rounded"
-          >
-            <span className="fs-5 me-2">⚙️</span>
-            {!shrink && <span>Settings</span>}
-          </NavLink>
+              <Settings
+                className="app-sidebar__icon"
+                size={20}
+                strokeWidth={2}
+                aria-hidden
+              />
+              {!shrink && <span>Settings</span>}
+            </NavLink>
+          </div>
         </div>
-      </div>
+      </aside>
     </>
   );
 };

@@ -1,173 +1,156 @@
-import React, { useEffect } from "react";
-import "./pages-css/assignment.css";
+import React, { useState } from "react";
+import { useAuth } from "../store/authContext.jsx";
+import AppPage from "../components/shell/AppPage.jsx";
+import PageHeader from "../components/shell/PageHeader.jsx";
+import {
+  ClipboardList,
+  Calendar,
+  CheckCircle2,
+  Clock,
+  FileUp,
+  Send,
+} from "lucide-react";
 
-
-const assignments = [
+const INITIAL = [
   {
     id: 1,
-    title: "Math Assignment 1",
-    due: "Nov 18, 2025",
-    submittedOn:"NULL",
+    title: "Problem set — algorithms",
+    due: "Due in 5 days",
     status: "pending",
   },
   {
     id: 2,
-    title: "Science Project",
-    due: "Nov 15, 2025",
-    submittedOn:"NULL",
+    title: "Short essay — AI in education",
+    due: "Submitted",
     status: "submitted",
   },
   {
     id: 3,
-    title: "Essay on AI",
-    due: "Nov 20, 2025",
-    submittedOn:"NULL",
+    title: "Lab reflection",
+    due: "Due in 12 days",
     status: "pending",
   },
-  // Add more assignments here
 ];
 
-const AssignmentSubmission = ({ shrink }) => {
-  useEffect(() => {
-    const progressCard = document.querySelector(".assignment-page .progress-card");
-    if (progressCard) {
-      progressCard.classList.add("active");
-    }
-  }, []);
+const AssignmentSubmission = () => {
+  const { user } = useAuth();
+  const [assignments] = useState(INITIAL);
+  const [file, setFile] = useState(null);
+  const [text, setText] = useState("");
+
+  const name =
+    user?.username?.trim() || user?.email?.split("@")[0] || "Learner";
 
   return (
-    <div className="assignment-page"
-        style={{
+    <AppPage>
+      <PageHeader
+        title="Assignments"
+        description="Track deadlines and submit your work. Connect a backend to replace sample tasks."
+        action={
+          <span className="inline-flex items-center gap-2 text-sm text-slate-500">
+            <span className="text-slate-400">Learner</span>
+            <span className="font-semibold text-slate-800">{name}</span>
+          </span>
+        }
+      />
 
-        }}
-    >
-      <div className="header">
-        <div className="title">Assignment Submission</div>
-        <div>
-          <span
-            className="material-icons"
-            style={{ verticalAlign: "middle" }}
+      <div className="mb-8 grid gap-4 sm:grid-cols-3">
+        {assignments.map((a) => (
+          <div
+            key={a.id}
+            className={`card-elevated flex flex-col gap-2 p-5 ${
+              a.status === "submitted" ? "border-emerald-200/80" : ""
+            }`}
           >
-            account_circle
-          </span>{" "}
-          User Name
-        </div>
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600">
+                  <ClipboardList className="h-4 w-4" />
+                </div>
+                <h3 className="text-sm font-semibold text-slate-900">{a.title}</h3>
+              </div>
+              {a.status === "submitted" ? (
+                <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-500" />
+              ) : (
+                <Clock className="h-4 w-4 shrink-0 text-amber-500" />
+              )}
+            </div>
+            <p className="flex items-center gap-1.5 text-xs text-slate-500">
+              <Calendar className="h-3.5 w-3.5" />
+              {a.due}
+            </p>
+            <span
+              className={`mt-1 inline-flex w-fit rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                a.status === "submitted"
+                  ? "bg-emerald-50 text-emerald-800"
+                  : "bg-amber-50 text-amber-900"
+              }`}
+            >
+              {a.status === "submitted" ? "Submitted" : "Pending"}
+            </span>
+          </div>
+        ))}
       </div>
 
-      <div className="container">
-        {/* Left Panel */}
-        <div className="panel">
-          <div className="instructions">
-            <span className="material-icons">assignment</span>
-            <strong>Instructions:</strong> Solve all the problems. You can upload
-            a file or type your answer below.
-          </div>
+      <div className="grid gap-6 lg:grid-cols-2">
+        <section className="card-elevated p-6 sm:p-8">
+          <h2 className="text-base font-semibold text-slate-900">Submit work</h2>
+          <p className="mt-1 text-sm text-slate-500">
+            Upload a file or paste your answer. Wire this to your storage API when ready.
+          </p>
 
-          <div className="due-date">
-            <strong>Due:</strong> Nov 20, 2025
-          </div>
+          <div className="mt-6 space-y-4">
+            <div className="flex items-center justify-between text-sm text-slate-600">
+              <span>Active task</span>
+              <span className="font-medium text-slate-900">Problem set — algorithms</span>
+            </div>
 
-          <div className="upload-section">
-            <label>
-              <span className="material-icons">cloud_upload</span> Upload your
-              assignment:
+            <label className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50/50 px-4 py-10 transition hover:border-indigo-300 hover:bg-indigo-50/30">
+              <FileUp className="h-8 w-8 text-indigo-400" />
+              <span className="mt-2 text-sm font-medium text-slate-700">
+                {file ? file.name : "Drop a PDF or document"}
+              </span>
+              <input
+                type="file"
+                className="hidden"
+                onChange={(e) => setFile(e.target.files?.[0] || null)}
+              />
             </label>
 
-            <input type="file" />
-            <span>or</span>
+            <p className="text-center text-xs text-slate-400">or</p>
 
-            <textarea rows="5" placeholder="Type your answer here..."></textarea>
+            <textarea
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              rows={5}
+              className="input-brand resize-y text-sm"
+              placeholder="Type your answer here…"
+            />
 
-            <button>
-              <span
-                className="material-icons"
-                style={{ verticalAlign: "middle", fontSize: "1.12em" }}
-              >
-                send
-              </span>
+            <button type="button" className="btn-brand w-full sm:w-auto">
+              <Send className="h-4 w-4" />
               Submit
             </button>
           </div>
-        </div>
+        </section>
 
-        {/* Right Panel */}
-        <div className="panel">
-          <div className="feedback">
-            <div className="score">
-              <span className="material-icons">auto_fix_high</span> AI Score:
-              8/10
-            </div>
-
-            <div className="highlights">
-              <strong>Strengths:</strong>
-              <ul>
-                <li>Clear explanation of concepts</li>
-                <li>Accurate calculations</li>
-              </ul>
-            </div>
-
-            <div className="improvements">
-              <strong>Areas to Improve:</strong>
-              <ul>
-                <li>Add more examples in Question 2</li>
-                <li>Review grammar in conclusion</li>
-              </ul>
-
-              <a href="#">
-                <span
-                  className="material-icons"
-                  style={{ fontSize: "1em", verticalAlign: "middle" }}
-                >
-                  menu_book
-                </span>{" "}
-                Learn grammar basics
-              </a>
-            </div>
+        <section className="card-elevated p-6 sm:p-8">
+          <h2 className="text-base font-semibold text-slate-900">AI feedback (sample)</h2>
+          <p className="mt-1 text-sm text-slate-500">
+            After you connect grading, this panel can show scores and comments.
+          </p>
+          <div className="mt-6 rounded-xl border border-slate-100 bg-gradient-to-b from-slate-50 to-white p-5">
+            <p className="text-sm text-slate-600">
+              <span className="font-semibold text-slate-900">Readiness score:</span> — / 10
+            </p>
+            <p className="mt-3 text-sm leading-relaxed text-slate-600">
+              Strengthen: add one concrete example for each main idea, and double-check
+              notation for big-O where relevant.
+            </p>
           </div>
-        </div>
-
-        {/* Progress Card */}
-        <div className="progress-card panel">
-          <strong>
-            <span className="material-icons">trending_up</span> Progress
-          </strong>
-
-          <div className="bar">
-            <div className="bar-inner"></div>
-          </div>
-
-          <span>You're getting better! Last score: 6/10</span>
-        </div>
+        </section>
       </div>
-
-    {/* Assignment list */}
-    
-        <div className="assignments-list"
-            // style={{
-            //     paddingLeft: shrink ? "100px" : "260px",
-            //     transition: "padding-left 0.3s ease",
-            //     maxWidth: "1420px",
-            // }}
-        >
-            <div className="assignment-list-section panel" style={{ marginBottom: 28 }}>
-            <div className="assignment-list-title">
-                Your Assignments
-            </div>
-            {assignments.map(assignment => (
-            <div key={assignment.id} className="assignment-card">
-            <span>
-                <span className="assignment-title">{assignment.title}</span>
-                <span className="assignment-due">Due: {assignment.due}</span>
-                <span className="submitted-on">Submitted On: {assignment.submittedOn}</span>
-            </span>
-            <span className={`assignment-status status-${assignment.status}`}>
-                {assignment.status === "pending" ? "Pending" : "Submitted"}
-            </span>
-            </div>
-        ))}
-        </div>
-        </div>
-    </div>
+    </AppPage>
   );
 };
 
